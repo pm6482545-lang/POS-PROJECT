@@ -1,188 +1,199 @@
-/* 1. GLOBAL STYLES */
+/* 1. GLOBAL SETTINGS & THEME */
 :root {
-    --primary: #2563eb;
-    --success: #16a34a;
-    --danger: #dc2626;
-    --dark: #1e293b;
-    --light: #f8fafc;
-    --gray: #64748b;
+    --brand-primary: #2563eb;
+    --brand-secondary: #0f172a;
+    --success: #22c55e;
+    --warning: #f59e0b;
+    --danger: #ef4444;
+    --bg-light: #f1f5f9;
+    --surface: #ffffff;
+    --text-main: #1e293b;
+    --text-muted: #64748b;
+    --radius-lg: 16px;
+    --radius-md: 12px;
+    --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
 }
 
 * {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
-    font-family: 'Inter', sans-serif;
+    font-family: 'Plus Jakarta Sans', sans-serif; /* Cleaner than Inter for POS */
 }
 
 body {
-    background-color: var(--light);
-    color: var(--dark);
+    background-color: var(--bg-light);
+    color: var(--text-main);
     height: 100vh;
     display: flex;
     flex-direction: column;
+    overflow: hidden;
 }
 
-/* 2. NAVIGATION */
+/* 2. MODERN NAVBAR */
 .navbar {
-    background: var(--dark);
+    background: var(--brand-secondary);
     color: white;
-    padding: 1rem 1.5rem;
+    padding: 0.75rem 1.5rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    z-index: 100;
 }
 
-.logo { font-weight: 700; letter-spacing: 1px; }
+.brand { display: flex; align-items: center; gap: 12px; }
+.logo-icon { background: var(--brand-primary); padding: 5px 8px; border-radius: 6px; font-weight: bold; }
+.logo-text { display: flex; flex-direction: column; }
+.company-name { font-weight: 800; font-size: 0.9rem; letter-spacing: 1px; }
+.app-name { font-size: 0.7rem; opacity: 0.7; }
 
-/* 3. LAYOUT STRUCTURE */
-.main-layout {
-    display: flex;
-    flex: 1;
-    overflow: hidden;
-}
-
-/* Sidebar for PC / Bottom Bar for Mobile */
+/* 3. SIDEBAR (PC) / NAVIGATION */
 .sidebar {
-    background: white;
-    width: 240px;
+    background: var(--surface);
+    width: 260px;
     border-right: 1px solid #e2e8f0;
     display: flex;
     flex-direction: column;
-    padding: 1rem;
+    justify-content: space-between;
+    padding: 1.5rem 1rem;
 }
 
 .nav-btn {
-    padding: 0.8rem 1rem;
-    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 0.85rem 1rem;
+    margin-bottom: 0.4rem;
     border: none;
-    background: none;
-    text-align: left;
+    background: transparent;
     cursor: pointer;
-    border-radius: 8px;
+    border-radius: var(--radius-md);
     font-weight: 600;
-    color: var(--gray);
-    transition: 0.3s;
+    color: var(--text-muted);
+    transition: all 0.2s ease;
 }
 
-.nav-btn.active {
-    background: var(--primary);
-    color: white;
-}
+.nav-btn:hover { background: #f8fafc; color: var(--brand-primary); }
+.nav-btn.active { background: var(--brand-primary); color: white; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2); }
 
-/* 4. CONTENT AREA */
-.content {
-    flex: 1;
-    padding: 1.5rem;
-    overflow-y: auto;
-}
-
-.tab-content { display: none; }
+/* 4. CONTENT & TABS */
+.content { flex: 1; padding: 2rem; overflow-y: auto; }
+.tab-content { display: none; animation: fadeIn 0.3s ease; }
 .tab-content.active { display: block; }
 
-/* 5. CHECKOUT GRID (Responsive) */
-.checkout-grid {
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* 5. CHECKOUT PAGE (The Core) */
+.checkout-container {
     display: grid;
-    grid-template-columns: 1fr 350px;
-    gap: 1.5rem;
-    margin-top: 1rem;
+    grid-template-columns: 1fr 380px;
+    gap: 2rem;
 }
 
-.product-selection {
-    background: white;
-    padding: 1rem;
-    border-radius: 12px;
-    min-height: 400px;
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 15px;
 }
 
-.cart-panel {
-    background: white;
+/* Product Cards */
+.product-card {
+    background: var(--surface);
+    padding: 1.25rem;
+    border-radius: var(--radius-md);
+    border: 1px solid #e2e8f0;
+    transition: transform 0.2s, border-color 0.2s;
+}
+
+.product-card:hover { transform: translateY(-3px); border-color: var(--brand-primary); }
+
+/* Cart Sidebar */
+.cart-sidebar {
+    background: var(--surface);
+    border-radius: var(--radius-lg);
+    display: flex;
+    flex-direction: column;
     padding: 1.5rem;
-    border-radius: 12px;
-    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
-    height: fit-content;
+    box-shadow: var(--shadow);
+    height: calc(100vh - 160px);
+    position: sticky;
+    top: 0;
 }
 
-/* 6. BUTTONS & UI ELEMENTS */
+.cart-body { flex: 1; overflow-y: auto; margin: 1rem 0; }
+
+.summary-line { display: flex; justify-content: space-between; margin-bottom: 8px; color: var(--text-muted); }
+.summary-total { display: flex; justify-content: space-between; margin-top: 12px; font-size: 1.4rem; font-weight: 800; color: var(--brand-secondary); }
+
+/* 6. PAY BUTTONS */
 .pay-btn {
     width: 100%;
-    padding: 1rem;
-    margin-top: 0.8rem;
+    padding: 1.1rem;
+    margin-top: 10px;
     border: none;
-    border-radius: 8px;
-    color: white;
+    border-radius: var(--radius-md);
     font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
     cursor: pointer;
 }
 
-.cash { background: var(--gray); }
-.mpesa { background: #37d037; } /* M-Pesa Green */
+.mpesa { background: #24c324; color: white; }
+.cash { background: var(--brand-secondary); color: white; }
 
-/* 7. DATA TABLES */
-.data-table {
-    width: 100%;
-    border-collapse: collapse;
-    background: white;
-    border-radius: 12px;
-    overflow: hidden;
-    margin-top: 1rem;
+/* 7. STATS CARDS (Reports) */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
 }
 
-.data-table th, .data-table td {
-    padding: 1rem;
-    text-align: left;
-    border-bottom: 1px solid #e2e8f0;
+.stat-card {
+    background: var(--surface);
+    padding: 1.5rem;
+    border-radius: var(--radius-md);
+    border-left: 5px solid var(--brand-primary);
 }
 
-/* 8. MODAL STYLES */
-.modal {
-    display: none;
-    position: fixed;
-    top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0,0,0,0.5);
-    align-items: center;
-    justify-content: center;
-}
+.stat-card.profit { border-left-color: var(--success); }
+.stat-card.warning { border-left-color: var(--warning); }
 
+/* 8. MODAL */
 .modal-content {
-    background: white;
-    padding: 2rem;
-    border-radius: 12px;
-    width: 90%;
-    max-width: 500px;
+    background: var(--surface);
+    padding: 2.5rem;
+    border-radius: var(--radius-lg);
+    box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1);
 }
 
-/* 9. MOBILE RESPONSIVENESS (The Magic) */
-@media (max-width: 768px) {
-    .main-layout {
-        flex-direction: column-reverse; /* Puts nav at bottom for thumb access */
-    }
+.form-group { margin-bottom: 1.2rem; }
+.form-group label { display: block; margin-bottom: 5px; font-weight: 600; font-size: 0.85rem; }
+.form-group input, .form-group select {
+    width: 100%;
+    padding: 0.8rem;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+}
 
+/* 9. MOBILE FIXES */
+@media (max-width: 768px) {
+    .main-layout { flex-direction: column-reverse; }
     .sidebar {
         width: 100%;
+        height: 70px;
         flex-direction: row;
-        justify-content: space-around;
         padding: 0.5rem;
-        height: 60px;
+        position: fixed;
+        bottom: 0;
     }
-
-    .nav-btn {
-        margin-bottom: 0;
-        font-size: 0.8rem;
-        flex-direction: column;
-        align-items: center;
-    }
-
-    .checkout-grid {
-        grid-template-columns: 1fr; /* Stack cart below items */
-    }
-
-    .data-table thead { display: none; } /* Hide table headers on tiny screens */
-    .data-table td { display: block; text-align: right; }
-    .data-table td::before {
-        content: attr(data-label);
-        float: left;
-        font-weight: bold;
-    }
+    .nav-btn { flex-direction: column; font-size: 0.65rem; gap: 4px; flex: 1; align-items: center; }
+    .content { padding: 1rem; padding-bottom: 80px; }
+    .checkout-container { grid-template-columns: 1fr; }
+    .cart-sidebar { height: auto; position: static; }
 }
