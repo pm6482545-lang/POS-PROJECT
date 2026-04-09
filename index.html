@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elevation Pillar | Pro POS System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="logo">ELEVATION PILLAR</div>
+        <div class="status-indicator">
+            <span id="connection-status">Online</span>
+        </div>
+    </nav>
+
+    <div class="main-layout">
+        <aside class="sidebar">
+            <button class="nav-btn active" onclick="showTab('checkout')">🛒 Checkout</button>
+            <button class="nav-btn" onclick="showTab('inventory')">📦 Inventory</button>
+            <button class="nav-btn" onclick="showTab('reports')">📈 Reports</button>
+            <button class="nav-btn" onclick="showTab('settings')">⚙️ Settings</button>
+        </aside>
+
+        <main class="content">
+
+            <section id="checkout" class="tab-content active">
+                <header class="tab-header">
+                    <h1>Point of Sale</h1>
+                    <input type="text" id="barcode-search" placeholder="Scan Barcode or Search Book...">
+                </header>
+                
+                <div class="checkout-grid">
+                    <div class="product-selection">
+                        <div id="product-list" class="grid-container">
+                            </div>
+                    </div>
+
+                    <div class="cart-panel">
+                        <h3>Current Order</h3>
+                        <div id="cart-items"></div>
+                        <div class="cart-totals">
+                            <p>Subtotal: <span id="subtotal">Ksh 0.00</span></p>
+                            <p>VAT (16%): <span id="tax">Ksh 0.00</span></p>
+                            <hr>
+                            <h2 id="grand-total">Total: Ksh 0.00</h2>
+                        </div>
+                        <div class="payment-options">
+                            <button class="pay-btn cash" onclick="processPayment('cash')">Cash Payment</button>
+                            <button class="pay-btn mpesa" onclick="processPayment('mpesa')">Lipa na M-Pesa</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="inventory" class="tab-content">
+                <header class="tab-header">
+                    <h1>Inventory Management</h1>
+                    <button class="add-new-btn" onclick="toggleModal('add-product-modal')">+ Add New Book</button>
+                </header>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Book Name</th>
+                            <th>Category</th>
+                            <th>Cost</th>
+                            <th>Price</th>
+                            <th>Stock</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="inventory-table-body">
+                        </tbody>
+                </table>
+            </section>
+
+            <section id="reports" class="tab-content">
+                <header class="tab-header">
+                    <h1>Sales & Profit Reports</h1>
+                </header>
+                <div class="stats-cards">
+                    <div class="card"><h3>Today's Sales</h3><p id="today-sales">Ksh 0</p></div>
+                    <div class="card"><h3>Today's Profit</h3><p id="today-profit">Ksh 0</p></div>
+                    <div class="card"><h3>Low Stock Items</h3><p id="low-stock-count">0</p></div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <div id="add-product-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="toggleModal('add-product-modal')">&times;</span>
+            <h2>Add Product to Shelves</h2>
+            <form id="add-product-form">
+                <input type="text" id="modal-name" placeholder="Book Title" required>
+                <select id="modal-category">
+                    <option value="Junior School">Junior School</option>
+                    <option value="Senior School">Senior School</option>
+                    <option value="Stationery">Stationery</option>
+                </select>
+                <input type="number" id="modal-cost" placeholder="Buying Price (Cost)" required>
+                <input type="number" id="modal-price" placeholder="Selling Price" required>
+                <input type="number" id="modal-stock" placeholder="Initial Stock Quantity" required>
+                <button type="submit" class="save-btn">Save Product</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="app.js" type="module"></script>
+</body>
+</html>
