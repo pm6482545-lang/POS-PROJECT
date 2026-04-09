@@ -102,3 +102,35 @@ onSnapshot(query(collection(db, "products"), orderBy("created", "desc")), (snaps
         }
     });
 });
+let cart = [];
+
+// This function runs when you click a book card
+window.addToCart = function(id, name, price) {
+    cart.push({ id, name, price });
+    updateCartUI();
+};
+
+function updateCartUI() {
+    const cartItemsDiv = document.getElementById('cart-items');
+    let subtotal = 0;
+    
+    // Clear current cart view and rebuild it
+    if(cartItemsDiv) {
+        cartItemsDiv.innerHTML = cart.map((item, index) => {
+            subtotal += item.price;
+            return `<div class="cart-row" style="display:flex; justify-content:space-between; padding:5px 0; border-bottom:1px solid #eee;">
+                        <span>${item.name}</span>
+                        <span>Ksh ${item.price}</span>
+                    </div>`;
+        }).join('');
+    }
+
+    // Calculate Taxes and Totals
+    const tax = subtotal * 0.16; // 16% VAT
+    const total = subtotal + tax;
+
+    // Update the numbers in your UI
+    document.getElementById('subtotal').innerText = `Ksh ${subtotal.toFixed(2)}`;
+    document.getElementById('tax').innerText = `Ksh ${tax.toFixed(2)}`;
+    document.getElementById('grand-total').innerText = `Total: Ksh ${total.toFixed(2)}`;
+}
