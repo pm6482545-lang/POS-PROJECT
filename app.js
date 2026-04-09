@@ -1,4 +1,4 @@
-3// 1. Firebase Configuration
+⁹3// 1. Firebase Configuration
 const firebaseConfig = {
   apiKey: "AIzaSyAc1vaJz5-Vp4uVNq_1U4MYbS79GyaW3Cs",
   authDomain: "elevation-pillar-pos.firebaseapp.com",
@@ -169,3 +169,40 @@ window.processPayment = async function(method) {
         alert("Payment Error: " + err.message);
     }
 };
+// --- 7. REPORTS LOGIC: Real-time Business Tracking ---
+onSnapshot(collection(db, "sales"), (snapshot) => {
+    let totalRevenue = 0;
+    const historyDiv = document.getElementById('sales-history-list');
+    
+    if(historyDiv) historyDiv.innerHTML = '';
+
+    snapshot.forEach((doc) => {
+        const sale = doc.data();
+        totalRevenue += sale.total;
+
+        // Add to history list
+        if(historyDiv) {
+            const date = sale.timestamp?.toDate().toLocaleTimeString() || "Just now";
+            historyDiv.innerHTML += `
+                <div style="background:white; padding:10px; border-bottom:1px solid #eee; display:flex; justify-content:space-between;">
+                    <div>
+                        <strong>${sale.method.toUpperCase()} Sale</strong><br>
+                        <small>${date}</small>
+                    </div>
+                    <span style="font-weight:bold; color:#16a34a;">+Ksh ${sale.total.toFixed(2)}</span>
+                </div>
+            `;
+        }
+    });
+
+    // Update the Summary Cards
+    if(document.getElementById('report-sales')) {
+        document.getElementById('report-sales').innerText = `Ksh ${totalRevenue.toFixed(2)}`;
+    }
+    
+    // Profit Calculation (Estimated at 30% for now)
+    if(document.getElementById('report-profit')) {
+        const estimatedProfit = totalRevenue * 0.30; 
+        document.getElementById('report-profit').innerText = `Ksh ${estimatedProfit.toFixed(2)}`;
+    }
+});
