@@ -1,0 +1,188 @@
+/* 1. GLOBAL STYLES */
+:root {
+    --primary: #2563eb;
+    --success: #16a34a;
+    --danger: #dc2626;
+    --dark: #1e293b;
+    --light: #f8fafc;
+    --gray: #64748b;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Inter', sans-serif;
+}
+
+body {
+    background-color: var(--light);
+    color: var(--dark);
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* 2. NAVIGATION */
+.navbar {
+    background: var(--dark);
+    color: white;
+    padding: 1rem 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.logo { font-weight: 700; letter-spacing: 1px; }
+
+/* 3. LAYOUT STRUCTURE */
+.main-layout {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+}
+
+/* Sidebar for PC / Bottom Bar for Mobile */
+.sidebar {
+    background: white;
+    width: 240px;
+    border-right: 1px solid #e2e8f0;
+    display: flex;
+    flex-direction: column;
+    padding: 1rem;
+}
+
+.nav-btn {
+    padding: 0.8rem 1rem;
+    margin-bottom: 0.5rem;
+    border: none;
+    background: none;
+    text-align: left;
+    cursor: pointer;
+    border-radius: 8px;
+    font-weight: 600;
+    color: var(--gray);
+    transition: 0.3s;
+}
+
+.nav-btn.active {
+    background: var(--primary);
+    color: white;
+}
+
+/* 4. CONTENT AREA */
+.content {
+    flex: 1;
+    padding: 1.5rem;
+    overflow-y: auto;
+}
+
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+/* 5. CHECKOUT GRID (Responsive) */
+.checkout-grid {
+    display: grid;
+    grid-template-columns: 1fr 350px;
+    gap: 1.5rem;
+    margin-top: 1rem;
+}
+
+.product-selection {
+    background: white;
+    padding: 1rem;
+    border-radius: 12px;
+    min-height: 400px;
+}
+
+.cart-panel {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+    height: fit-content;
+}
+
+/* 6. BUTTONS & UI ELEMENTS */
+.pay-btn {
+    width: 100%;
+    padding: 1rem;
+    margin-top: 0.8rem;
+    border: none;
+    border-radius: 8px;
+    color: white;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.cash { background: var(--gray); }
+.mpesa { background: #37d037; } /* M-Pesa Green */
+
+/* 7. DATA TABLES */
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    margin-top: 1rem;
+}
+
+.data-table th, .data-table td {
+    padding: 1rem;
+    text-align: left;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+/* 8. MODAL STYLES */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.5);
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-content {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 500px;
+}
+
+/* 9. MOBILE RESPONSIVENESS (The Magic) */
+@media (max-width: 768px) {
+    .main-layout {
+        flex-direction: column-reverse; /* Puts nav at bottom for thumb access */
+    }
+
+    .sidebar {
+        width: 100%;
+        flex-direction: row;
+        justify-content: space-around;
+        padding: 0.5rem;
+        height: 60px;
+    }
+
+    .nav-btn {
+        margin-bottom: 0;
+        font-size: 0.8rem;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .checkout-grid {
+        grid-template-columns: 1fr; /* Stack cart below items */
+    }
+
+    .data-table thead { display: none; } /* Hide table headers on tiny screens */
+    .data-table td { display: block; text-align: right; }
+    .data-table td::before {
+        content: attr(data-label);
+        float: left;
+        font-weight: bold;
+    }
+}
