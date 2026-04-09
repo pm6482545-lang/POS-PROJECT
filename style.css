@@ -19,16 +19,17 @@
     margin: 0;
     padding: 0;
     font-family: 'Plus Jakarta Sans', sans-serif;
-    -webkit-tap-highlight-color: transparent; /* Clean touch for mobile */
+    -webkit-tap-highlight-color: transparent;
 }
 
 body {
     background-color: var(--bg-light);
     color: var(--text-main);
+    /* Desktop fix: Fixed height to allow internal scrolling */
     height: 100vh;
     display: flex;
     flex-direction: column;
-    overflow: hidden; /* Prevents double scrollbars */
+    overflow: hidden; 
 }
 
 /* 2. MODERN NAVBAR */
@@ -39,7 +40,7 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    z-index: 1001; /* Stay above everything */
+    z-index: 1001;
     flex-shrink: 0;
 }
 
@@ -49,11 +50,11 @@ body {
 .company-name { font-weight: 800; font-size: 0.9rem; letter-spacing: 1px; }
 .app-name { font-size: 0.7rem; opacity: 0.7; }
 
-/* 3. LAYOUT ENGINE */
+/* 3. LAYOUT ENGINE (The Desktop Fix) */
 .main-layout {
     display: flex;
     flex: 1;
-    overflow: hidden; /* Desktop keeps sidebars fixed */
+    overflow: hidden; /* Keeps sidebar and content as separate scroll zones */
 }
 
 .sidebar {
@@ -64,6 +65,7 @@ body {
     flex-direction: column;
     padding: 1.5rem 1rem;
     overflow-y: auto;
+    flex-shrink: 0;
 }
 
 .nav-btn {
@@ -79,7 +81,6 @@ body {
     font-weight: 600;
     color: var(--text-muted);
     transition: all 0.2s ease;
-    text-decoration: none;
 }
 
 .nav-btn.active { 
@@ -88,13 +89,14 @@ body {
     box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2); 
 }
 
-/* 4. CONTENT AREA (The Scrolling Part) */
+/* 4. CONTENT AREA (The Scroll Zone) */
 .content { 
     flex: 1; 
     padding: 2rem; 
     overflow-y: auto; 
     background: var(--bg-light);
     scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
 }
 
 .tab-content { display: none; animation: fadeIn 0.3s ease; }
@@ -105,10 +107,10 @@ body {
     to { opacity: 1; transform: translateY(0); }
 }
 
-/* 5. CHECKOUT SYSTEM */
+/* 5. CHECKOUT SYSTEM (Responsive Grid) */
 .checkout-container {
     display: grid;
-    grid-template-columns: 1fr 380px;
+    grid-template-columns: 1fr 380px; /* Fixed width sidebar for order summary */
     gap: 2rem;
     align-items: start;
 }
@@ -119,7 +121,7 @@ body {
     gap: 15px;
 }
 
-/* 6. PRODUCT CARDS & UI */
+/* 6. PRODUCT CARDS */
 .product-card {
     background: var(--surface);
     padding: 1.25rem;
@@ -127,9 +129,10 @@ body {
     border: 1px solid #e2e8f0;
     text-align: center;
     transition: all 0.2s;
+    cursor: pointer;
 }
-
-.product-card:active { transform: scale(0.95); } /* Feedback on tap */
+.product-card:hover { border-color: var(--brand-primary); transform: translateY(-2px); }
+.product-card:active { transform: scale(0.95); }
 
 .cart-sidebar {
     background: var(--surface);
@@ -148,37 +151,31 @@ body {
     border-radius: var(--radius-md);
     font-weight: 700;
     cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
 }
 
 .mpesa { background: #24c324; color: white; }
-.cash { background: var(--brand-secondary); color: white; }
+.cash { background: #334155; color: white; }
 
-/* 7. DATA TABLES */
-.table-container { 
-    background: var(--surface); 
-    border-radius: var(--radius-md); 
-    overflow-x: auto; 
-    box-shadow: var(--shadow);
+/* 7. MOBILE RESPONSIVENESS (The Android Fix) */
+@media (max-width: 1024px) {
+    .checkout-container { grid-template-columns: 1fr; }
 }
 
-.data-table { width: 100%; border-collapse: collapse; min-width: 600px; }
-.data-table th { background: #f8fafc; padding: 1rem; text-align: left; font-size: 0.8rem; text-transform: uppercase; color: var(--text-muted); }
-.data-table td { padding: 1rem; border-top: 1px solid #f1f5f9; }
-
-/* 8. MOBILE RESPONSIVENESS (The Magic Fix) */
 @media (max-width: 768px) {
-    body { overflow: visible; height: auto; } /* Let the body scroll on mobile */
+    body { overflow: auto; height: auto; } /* Allow full page scroll on mobile */
     
     .main-layout { 
-        display: block; /* Break flex layout */
+        display: block; 
         height: auto;
-        overflow: visible;
     }
 
     .content { 
         padding: 1rem; 
-        padding-bottom: 120px; /* SPACE FOR BOTTOM NAV */
-        overflow: visible; 
+        padding-bottom: 140px; /* Extra space so Lipa na M-Pesa is visible */
     }
 
     .sidebar {
@@ -186,48 +183,31 @@ body {
         bottom: 0;
         left: 0;
         width: 100%;
-        height: 75px;
+        height: 80px;
         flex-direction: row;
-        justify-content: space-around;
         padding: 5px;
-        border-right: none;
-        border-top: 1px solid #e2e8f0;
         z-index: 1000;
+        border-top: 1px solid #e2e8f0;
         box-shadow: 0 -5px 15px rgba(0,0,0,0.05);
+        overflow-y: hidden;
     }
 
     .nav-btn { 
         flex-direction: column; 
-        gap: 2px; 
-        font-size: 0.65rem; 
+        gap: 4px; 
+        font-size: 0.7rem; 
         margin-bottom: 0;
-        padding: 8px;
         flex: 1;
         justify-content: center;
-        text-align: center;
-    }
-
-    .checkout-container { 
-        grid-template-columns: 1fr; 
-        display: flex;
-        flex-direction: column-reverse; /* Put cart above products on mobile if you prefer, or remove this line */
     }
 
     .grid-container {
-        grid-template-columns: repeat(2, 1fr); /* 2 books side by side */
+        grid-template-columns: repeat(2, 1fr); /* Clean 2-column layout for books */
     }
 
     .cart-sidebar {
         position: static;
         width: 100%;
-        margin-bottom: 20px;
-    }
-
-    /* Modal Fix for Small Screens */
-    .modal-content {
-        width: 95%;
-        padding: 1.5rem;
-        max-height: 90vh;
-        overflow-y: auto;
+        margin-top: 20px;
     }
 }
