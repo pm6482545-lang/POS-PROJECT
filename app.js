@@ -1,4 +1,4 @@
-// 1. Firebase Configuration
+3// 1. Firebase Configuration
 const firebaseConfig = {
   apiKey: "AIzaSyAc1vaJz5-Vp4uVNq_1U4MYbS79GyaW3Cs",
   authDomain: "elevation-pillar-pos.firebaseapp.com",
@@ -134,3 +134,38 @@ function updateCartUI() {
     document.getElementById('tax').innerText = `Ksh ${tax.toFixed(2)}`;
     document.getElementById('grand-total').innerText = `Total: Ksh ${total.toFixed(2)}`;
 }
+import { doc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
+
+window.processPayment = async function(method) {
+    if (cart.length === 0) return alert("Cart is empty!");
+
+    const subtotal = cart.reduce((sum, item) => sum + item.price, 0);
+    const total = subtotal * 1.16;
+
+    try {
+        // 1. Save Sale to Firebase
+        await addDoc(collection(db, "sales"), {
+            items: cart,
+            total: total,
+            method: method,
+            timestamp: new Date()
+        });
+
+        // 2. Update Stock for each item
+        for (const item of cart) {
+            const productRef = doc(db, "products", item.id);
+            await updateDoc(productRef, {
+                stock: increment(-1)
+            });
+        }
+
+        alert(`✅ ${method.toUpperCase()} Payment Successful!`);
+        
+        // 3. Reset Cart
+        cart = [];
+        updateCartUI();
+
+    } catch (err) {
+        alert("Payment Error: " + err.message);
+    }
+};
