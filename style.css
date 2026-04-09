@@ -18,12 +18,13 @@
     -webkit-tap-highlight-color: transparent;
 }
 
+/* FIX: Changed 'overflow: hidden' to 'auto' to allow scrolling */
 body {
     background-color: var(--bg-light);
-    height: 100vh;
+    min-height: 100vh;
     display: flex;
     flex-direction: column;
-    overflow: hidden; 
+    overflow-y: auto; 
 }
 
 /* 2. MODERN NAVBAR */
@@ -34,15 +35,15 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    position: sticky;
+    top: 0;
     z-index: 1001;
-    flex-shrink: 0;
 }
 
-/* 3. LAYOUT ENGINE (The Desktop Fix) */
+/* 3. LAYOUT ENGINE */
 .main-layout {
     display: flex;
     flex: 1;
-    overflow: hidden;
 }
 
 .sidebar {
@@ -52,8 +53,9 @@ body {
     display: flex;
     flex-direction: column;
     padding: 1.5rem 1rem;
-    overflow-y: auto;
-    flex-shrink: 0;
+    position: sticky;
+    top: 60px;
+    height: calc(100vh - 60px);
 }
 
 .nav-btn {
@@ -75,21 +77,17 @@ body {
     color: white !important; 
 }
 
-/* 4. CONTENT AREA (Ensures scrolling works) */
+/* 4. CONTENT AREA */
 .content { 
     flex: 1; 
     padding: 2rem; 
-    overflow-y: auto; 
     background: var(--bg-light);
 }
 
-.tab-content { display: none; }
-.tab-content.active { display: block; }
-
-/* 5. CHECKOUT & PRODUCT UI */
+/* 5. CHECKOUT & INVENTORY UI */
 .checkout-container {
     display: grid;
-    grid-template-columns: 1fr 380px;
+    grid-template-columns: 1fr 380px; /* Desktop spacing */
     gap: 2rem;
 }
 
@@ -108,59 +106,60 @@ body {
     border: none;
     border-radius: var(--radius-md);
     font-weight: 700;
+    cursor: pointer;
 }
 
 .mpesa { background: #22c55e; color: white; }
 .cash { background: #334155; color: white; }
 
-/* 8. MOBILE RESPONSIVENESS (The Android Dock Fix) */
+/* 8. MOBILE OVERHAUL (The Android Correction) */
 @media (max-width: 768px) {
-    body { overflow-y: auto !important; height: auto; }
+    body { overflow-x: hidden; }
     .main-layout { display: block; }
 
-    /* Space so content isn't hidden by the new bottom bar */
+    /* Space at bottom so the menu doesn't cover your 'Pay' buttons */
     .content { 
         padding: 1rem; 
-        padding-bottom: 100px !important; 
+        padding-bottom: 120px !important; 
     }
 
-    /* Converts sidebar to a horizontal Bottom Dock */
     .sidebar {
         position: fixed;
         bottom: 0;
         left: 0;
         width: 100%;
-        height: 70px;
+        height: 75px;
         flex-direction: row !important;
         justify-content: space-around;
         align-items: center;
         padding: 0;
-        background: var(--surface);
-        border-top: 1px solid #e2e8f0;
         z-index: 2000;
-        overflow-y: hidden;
+        border-top: 1px solid #e2e8f0;
+        border-right: none;
     }
 
-    /* Fixes buttons to sit side-by-side without squishing */
     .nav-btn { 
         flex-direction: column !important; 
         gap: 2px; 
         font-size: 0.65rem; 
-        margin-bottom: 0;
+        margin: 0;
         flex: 1;
         background: transparent !important;
-        border-radius: 0;
-        padding: 5px;
     }
 
-    /* Highlight color instead of a bulky background */
     .nav-btn.active {
         color: var(--brand-primary) !important;
-        box-shadow: none !important;
     }
 
-    /* Removes the floating copyright text from the mobile dock */
-    .sidebar .copyright, .sidebar span:not(.nav-icon) {
-        display: none;
+    .sidebar .copyright { display: none; }
+
+    .checkout-container {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .grid-container {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
     }
 }
