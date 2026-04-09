@@ -1,4 +1,4 @@
-⁹3// 1. Firebase Configuration
+// 1. Firebase Configuration
 const firebaseConfig = {
   apiKey: "AIzaSyAc1vaJz5-Vp4uVNq_1U4MYbS79GyaW3Cs",
   authDomain: "elevation-pillar-pos.firebaseapp.com",
@@ -9,21 +9,22 @@ const firebaseConfig = {
   measurementId: "G-QMCLQ1377J"
 };
 
-// 2. Import SDKs (Database + App)
+// 2. Import SDKs
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
-import { getFirestore, collection, addDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
+import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, doc, updateDoc, increment, deleteDoc } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
 
-// Initialize Firebase & Database
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// --- 3. NAVIGATION (Switching Tabs) ---
+// --- 3. NAVIGATION ---
 window.showTab = function(tabId) {
     document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
     document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
     
     document.getElementById(tabId).classList.add('active');
-    if (event) event.currentTarget.classList.add('active');
+    // Finds the button that was clicked to add active class
+    const activeBtn = Array.from(document.querySelectorAll('.nav-btn')).find(btn => btn.getAttribute('onclick').includes(tabId));
+    if (activeBtn) activeBtn.classList.add('active');
 };
 
 // --- 4. MODAL LOGIC ---
@@ -32,14 +33,13 @@ window.toggleModal = function(modalId) {
     modal.style.display = (modal.style.display === 'flex') ? 'none' : 'flex';
 };
 
-// --- 5. INVENTORY: Save Book to Cloud ---
+// --- 5. INVENTORY ACTIONS (Add & Delete) ---
 const addProductForm = document.getElementById('add-product-form');
 if (addProductForm) {
     addProductForm.addEventListener('submit', async (e) => {
         e.preventDefault();
-        
         const saveBtn = e.target.querySelector('.save-btn');
-        saveBtn.innerText = "Saving...";
+        saveBtn.innerText = "Processing...";
         saveBtn.disabled = true;
 
         const product = {
@@ -53,60 +53,73 @@ if (addProductForm) {
 
         try {
             await addDoc(collection(db, "products"), product);
-            alert("✅ Book added to shelves!");
             toggleModal('add-product-modal');
             addProductForm.reset();
-        } catch (err) {
-            alert("❌ Error: " + err.message);
-        } finally {
-            saveBtn.innerText = "Save Product";
-            saveBtn.disabled = false;
-        }
+        } catch (err) { alert("Error adding product: " + err.message); }
+        finally { saveBtn.innerText = "Confirm and Add to Shelves"; saveBtn.disabled = false; }
     });
 }
 
-// --- 6. REAL-TIME SYNC: Update UI when Database changes ---
+window.deleteProduct = async function(id) {
+    if(confirm("Are you sure you want to remove this book from inventory?")) {
+        await deleteDoc(doc(db, "products", id));
+    }
+};
+
+// --- 6. REAL-TIME DATA SYNC ---
 onSnapshot(query(collection(db, "products"), orderBy("created", "desc")), (snapshot) => {
     const tableBody = document.getElementById('inventory-table-body');
     const productGrid = document.getElementById('product-list');
+    let lowStock = 0;
     
     if (tableBody) tableBody.innerHTML = '';
     if (productGrid) productGrid.innerHTML = '';
 
     snapshot.forEach((doc) => {
         const item = doc.data();
+        if (item.stock <= 5) lowStock++;
         
-        // Add to Inventory Management Table
+        // Populate Inventory Table
         if (tableBody) {
             tableBody.innerHTML += `
                 <tr>
-                    <td>${item.name}</td>
+                    <td><strong>${item.name}</strong></td>
                     <td>${item.category}</td>
                     <td>Ksh ${item.cost}</td>
                     <td>Ksh ${item.price}</td>
                     <td>${item.stock}</td>
-                    <td><button style="border:none; background:none; cursor:pointer;">🗑️</button></td>
-                </tr>
-            `;
+                    <td><span class="status-badge ${item.stock > 5 ? 'online' : 'warning'}"></span> ${item.stock > 5 ? 'In Stock' : 'Low'}</td>
+                    <td><button onclick="deleteProduct('${doc.id}')" style="cursor:pointer; font-size:1.2rem; border:none; background:none;">🗑️</button></td>
+                </tr>`;
         }
 
-        // Add to Point of Sale (Checkout Grid)
+        // Populate Checkout Grid (The Books)
         if (productGrid) {
             productGrid.innerHTML += `
-                <div class="product-card" style="background:white; padding:15px; border-radius:10px; border:1px solid #eee; text-align:center; cursor:pointer;" onclick="addToCart('${doc.id}', '${item.name}', ${item.price})">
-                    <h4 style="margin-bottom:5px;">${item.name}</h4>
-                    <p style="color:#2563eb; font-weight:bold;">Ksh ${item.price}</p>
-                    <small style="color:#64748b;">${item.stock} in stock</small>
-                </div>
-            `;
+                <div class="product-card" onclick="addToCart('${doc.id}', '${item.name}', ${item.price})">
+                    <div class="card-icon">📚</div>
+                    <h4>${item.name}</h4>
+                    <p class="price-tag">Ksh ${item.price}</p>
+                    <small class="stock-tag">${item.stock} left</small>
+                </div>`;
         }
     });
+    
+    if(document.getElementById('low-stock-count')) {
+        document.getElementById('low-stock-count').innerText = lowStock;
+    }
 });
+
+// --- 7. CART & PAYMENT LOGIC ---
 let cart = [];
 
-// This function runs when you click a book card
 window.addToCart = function(id, name, price) {
     cart.push({ id, name, price });
+    updateCartUI();
+};
+
+window.clearCart = function() {
+    cart = [];
     updateCartUI();
 };
 
@@ -114,36 +127,28 @@ function updateCartUI() {
     const cartItemsDiv = document.getElementById('cart-items');
     let subtotal = 0;
     
-    // Clear current cart view and rebuild it
     if(cartItemsDiv) {
-        cartItemsDiv.innerHTML = cart.map((item, index) => {
+        cartItemsDiv.innerHTML = cart.map((item) => {
             subtotal += item.price;
-            return `<div class="cart-row" style="display:flex; justify-content:space-between; padding:5px 0; border-bottom:1px solid #eee;">
-                        <span>${item.name}</span>
-                        <span>Ksh ${item.price}</span>
-                    </div>`;
+            return `<div class="summary-line"><span>${item.name}</span><span>Ksh ${item.price}</span></div>`;
         }).join('');
     }
 
-    // Calculate Taxes and Totals
-    const tax = subtotal * 0.16; // 16% VAT
+    const tax = subtotal * 0.16;
     const total = subtotal + tax;
 
-    // Update the numbers in your UI
     document.getElementById('subtotal').innerText = `Ksh ${subtotal.toFixed(2)}`;
     document.getElementById('tax').innerText = `Ksh ${tax.toFixed(2)}`;
-    document.getElementById('grand-total').innerText = `Total: Ksh ${total.toFixed(2)}`;
+    document.getElementById('grand-total').innerText = `Ksh ${total.toFixed(2)}`;
 }
-import { doc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
 
 window.processPayment = async function(method) {
-    if (cart.length === 0) return alert("Cart is empty!");
+    if (cart.length === 0) return alert("Please select a book first!");
 
     const subtotal = cart.reduce((sum, item) => sum + item.price, 0);
     const total = subtotal * 1.16;
 
     try {
-        // 1. Save Sale to Firebase
         await addDoc(collection(db, "sales"), {
             items: cart,
             total: total,
@@ -151,58 +156,38 @@ window.processPayment = async function(method) {
             timestamp: new Date()
         });
 
-        // 2. Update Stock for each item
         for (const item of cart) {
-            const productRef = doc(db, "products", item.id);
-            await updateDoc(productRef, {
-                stock: increment(-1)
-            });
+            await updateDoc(doc(db, "products", item.id), { stock: increment(-1) });
         }
 
-        alert(`✅ ${method.toUpperCase()} Payment Successful!`);
-        
-        // 3. Reset Cart
-        cart = [];
-        updateCartUI();
-
-    } catch (err) {
-        alert("Payment Error: " + err.message);
-    }
+        alert(`✅ ${method.toUpperCase()} Payment Recorded!`);
+        clearCart();
+    } catch (err) { alert("Payment Error: " + err.message); }
 };
-// --- 7. REPORTS LOGIC: Real-time Business Tracking ---
+
+// --- 8. REPORTS & ANALYTICS ---
 onSnapshot(collection(db, "sales"), (snapshot) => {
-    let totalRevenue = 0;
+    let revenue = 0;
+    let transactions = 0;
     const historyDiv = document.getElementById('sales-history-list');
-    
     if(historyDiv) historyDiv.innerHTML = '';
 
     snapshot.forEach((doc) => {
         const sale = doc.data();
-        totalRevenue += sale.total;
+        revenue += sale.total;
+        transactions++;
 
-        // Add to history list
         if(historyDiv) {
-            const date = sale.timestamp?.toDate().toLocaleTimeString() || "Just now";
+            const time = sale.timestamp?.toDate().toLocaleTimeString() || "Just now";
             historyDiv.innerHTML += `
-                <div style="background:white; padding:10px; border-bottom:1px solid #eee; display:flex; justify-content:space-between;">
-                    <div>
-                        <strong>${sale.method.toUpperCase()} Sale</strong><br>
-                        <small>${date}</small>
-                    </div>
-                    <span style="font-weight:bold; color:#16a34a;">+Ksh ${sale.total.toFixed(2)}</span>
-                </div>
-            `;
+                <div style="background:white; padding:12px; border-radius:8px; margin-bottom:8px; display:flex; justify-content:space-between; border:1px solid #eee;">
+                    <div><strong>${sale.method.toUpperCase()}</strong><br><small>${time}</small></div>
+                    <span style="color:#22c55e; font-weight:700;">+Ksh ${sale.total.toFixed(2)}</span>
+                </div>`;
         }
     });
 
-    // Update the Summary Cards
-    if(document.getElementById('report-sales')) {
-        document.getElementById('report-sales').innerText = `Ksh ${totalRevenue.toFixed(2)}`;
-    }
-    
-    // Profit Calculation (Estimated at 30% for now)
-    if(document.getElementById('report-profit')) {
-        const estimatedProfit = totalRevenue * 0.30; 
-        document.getElementById('report-profit').innerText = `Ksh ${estimatedProfit.toFixed(2)}`;
-    }
+    if(document.getElementById('report-sales')) document.getElementById('report-sales').innerText = `Ksh ${revenue.toFixed(2)}`;
+    if(document.getElementById('report-orders')) document.getElementById('report-orders').innerText = transactions;
+    if(document.getElementById('report-profit')) document.getElementById('report-profit').innerText = `Ksh ${(revenue * 0.25).toFixed(2)}`;
 });
