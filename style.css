@@ -1,15 +1,11 @@
-/* 1. GLOBAL SETTINGS & THEME */
+/* 1. GLOBAL RESET */
 :root {
     --brand-primary: #2563eb;
     --brand-secondary: #0f172a;
     --success: #22c55e;
     --bg-light: #f1f5f9;
     --surface: #ffffff;
-    --text-main: #1e293b;
-    --text-muted: #64748b;
-    --radius-lg: 16px;
     --radius-md: 12px;
-    --shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
 }
 
 * {
@@ -17,132 +13,93 @@
     margin: 0;
     padding: 0;
     font-family: 'Plus Jakarta Sans', sans-serif;
-    -webkit-tap-highlight-color: transparent;
 }
 
 body {
     background-color: var(--bg-light);
     height: 100vh;
+    width: 100vw;
     display: flex;
     flex-direction: column;
-    overflow: hidden; /* Fixes the double scroll issue you had */
+    overflow: hidden; /* Keep hidden here to let the CONTENT handle the scroll */
 }
 
-/* 2. MODERN NAVBAR (Top Bar) */
+/* 2. THE TOP NAVBAR */
 .navbar {
     background: var(--brand-secondary);
     color: white;
-    padding: 0.75rem 1.5rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+    padding: 10px 20px;
     z-index: 1001;
     flex-shrink: 0;
 }
 
-.brand { display: flex; align-items: center; gap: 12px; }
-.logo-icon { background: var(--brand-primary); padding: 5px 8px; border-radius: 6px; font-weight: bold; }
-.logo-text { display: flex; flex-direction: column; }
-.company-name { font-weight: 800; font-size: 0.9rem; letter-spacing: 1px; }
-
-/* 3. TAB SYSTEM (The Fix for overlapping content) */
+/* 3. THE FIX: MODERN TAB SYSTEM */
 .tab-content {
-    display: none; 
+    display: none; /* Stay hidden when not active */
     width: 100%;
 }
 
 .tab-content.active {
-    display: block;
-    animation: fadeIn 0.3s ease;
+    display: block; /* Only show when JS triggers it */
 }
 
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-/* 4. LAYOUT & SIDEBAR (Desktop) */
+/* 4. THE FIX: SCROLLABLE CONTENT */
 .main-layout {
     display: flex;
     flex: 1;
     overflow: hidden;
 }
 
-.sidebar {
-    background: var(--surface);
-    width: 260px;
-    border-right: 1px solid #e2e8f0;
-    display: flex;
-    flex-direction: column;
-    padding: 1.5rem 1rem;
-    flex-shrink: 0;
+.content {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto; /* THIS IS WHAT ALLOWS SCROLLING */
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 100px; /* Crucial: Keeps buttons from hiding under the dock */
 }
 
-.nav-btn {
-    display: flex;
+/* 5. THE FIX: PROFESSIONAL MODAL (Inventory Popup) */
+/* Your screenshot showed this stuck at the bottom—this fixes it */
+.modal {
+    display: none; 
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.7);
+    z-index: 2000; /* Stays above everything */
+    justify-content: center;
     align-items: center;
-    gap: 12px;
-    padding: 0.85rem 1rem;
-    margin-bottom: 0.4rem;
-    border: none;
-    background: transparent;
-    cursor: pointer;
-    border-radius: var(--radius-md);
-    font-weight: 600;
-    color: var(--text-muted);
-    transition: all 0.2s ease;
+    padding: 20px;
 }
 
-.nav-btn.active { 
-    background: var(--brand-primary); 
-    color: white !important; 
-    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2); 
+.modal-content {
+    background: white;
+    padding: 25px;
+    border-radius: 16px;
+    width: 100%;
+    max-width: 500px;
 }
 
-/* 5. CONTENT AREA */
-.content { 
-    flex: 1; 
-    padding: 2rem; 
-    overflow-y: auto; 
-    background: var(--bg-light);
-}
-
-/* 6. PRODUCT & UI COMPONENTS */
-.grid-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-    gap: 15px;
-}
-
-.product-card {
-    background: var(--surface);
-    padding: 1.25rem;
-    border-radius: var(--radius-md);
-    border: 1px solid #e2e8f0;
-    text-align: center;
-}
-
+/* 6. BUTTONS & UI */
 .pay-btn {
     width: 100%;
-    padding: 1.1rem;
+    padding: 16px;
     margin-top: 10px;
     border: none;
-    border-radius: var(--radius-md);
+    border-radius: 12px;
     font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
 }
 
 .mpesa { background: #22c55e; color: white; }
 .cash { background: #334155; color: white; }
 
-/* 7. MOBILE OVERHAUL (The Android Correction) */
+/* 7. THE MOBILE "DOCK" OVERHAUL */
 @media (max-width: 768px) {
     .main-layout { display: block; }
-    
-    .content {
-        height: calc(100vh - 135px); /* Header + Dock height subtracted */
-        padding: 1rem;
-        overflow-y: auto;
-    }
 
     .sidebar {
         position: fixed;
@@ -150,35 +107,30 @@ body {
         left: 0;
         width: 100%;
         height: 70px;
+        background: white;
+        display: flex !important;
         flex-direction: row !important;
-        background: var(--surface);
-        z-index: 9999 !important; /* Always on top of everything */
-        box-shadow: 0 -4px 10px rgba(0,0,0,0.1);
+        z-index: 1500;
+        box-shadow: 0 -4px 15px rgba(0,0,0,0.1);
         padding: 0;
-        border-top: 1px solid #e2e8f0;
+        border-top: 1px solid #eee;
     }
 
     .nav-btn {
         flex: 1;
         flex-direction: column !important;
-        justify-content: center;
-        gap: 4px;
+        background: none;
         border-radius: 0;
-        font-size: 10px;
-        margin-bottom: 0;
-        padding: 5px;
+        font-size: 11px;
+        color: #64748b;
+        padding: 10px 0;
+        gap: 4px;
     }
 
     .nav-btn.active {
-        background: transparent;
-        color: var(--brand-primary) !important;
-        box-shadow: none;
+        color: var(--brand-primary);
+        background: #f0f7ff;
     }
 
-    .sidebar .copyright { display: none; } /* Saves space on phone */
-
-    .grid-container {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 10px;
-    }
+    .sidebar-footer { display: none; } /* Hide copyright on mobile to save space */
 }
