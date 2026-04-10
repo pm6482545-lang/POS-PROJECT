@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Elevation Pillar | Professional POS</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=3">
+    <link rel="stylesheet" href="style.css?v=4">
 </head>
 <body>
 
@@ -61,8 +61,7 @@
                 
                 <div class="checkout-container">
                     <div class="product-gallery">
-                        <div id="product-list" class="grid-container">
-                            </div>
+                        <div id="product-list" class="grid-container"></div>
                     </div>
 
                     <div class="cart-sidebar">
@@ -77,6 +76,10 @@
                             <div class="summary-line">
                                 <span>Subtotal</span>
                                 <span id="subtotal">Ksh 0.00</span>
+                            </div>
+                            <div class="summary-line">
+                                <span>VAT (16%)</span>
+                                <span id="tax">Ksh 0.00</span>
                             </div>
                             <div class="summary-total">
                                 <span>Grand Total</span>
@@ -94,14 +97,14 @@
 
             <section id="inventory" class="tab-content">
                 <header class="tab-header">
-                    <h1>Inventory</h1>
+                    <h1>Inventory Management</h1>
                     <button class="add-new-btn" onclick="toggleModal('add-product-modal')">+ Add Product</button>
                 </header>
                 <div class="table-container">
                     <table class="data-table">
                         <thead>
                             <tr>
-                                <th>Item</th>
+                                <th>Item Details</th>
                                 <th>Cost</th>
                                 <th>Retail</th>
                                 <th>Stock</th>
@@ -114,19 +117,45 @@
             </section>
 
             <section id="reports" class="tab-content">
+                <header class="tab-header">
+                    <h1>Analytics & Performance</h1>
+                </header>
                 <div class="stats-grid">
                     <div class="stat-card revenue">
-                        <small>Revenue</small>
+                        <small>Today's Revenue</small>
                         <h2 id="report-sales">Ksh 0.00</h2>
                     </div>
-                    <div class="stat-card warning">
-                        <small>Low Stock</small>
-                        <h2 id="low-stock-count">0</h2>
+                    <div class="stat-card profit">
+                        <small>Estimated Profit</small>
+                        <h2 id="report-profit">Ksh 0.00</h2>
                     </div>
                 </div>
                 <div class="recent-sales-section">
-                    <h3>Recent Transactions</h3>
+                    <h3>Recent Transaction Feed</h3>
                     <div id="sales-history-list" class="feed-container"></div>
+                </div>
+            </section>
+
+            <section id="settings" class="tab-content">
+                <header class="tab-header">
+                    <h1>System Settings</h1>
+                    <p class="subtitle">Configure business details and tax rates</p>
+                </header>
+                <div class="settings-grid">
+                    <div class="settings-card">
+                        <h3>Business Profile</h3>
+                        <div class="form-group">
+                            <label>Company Name</label>
+                            <input type="text" value="Elevation Pillar" readonly>
+                        </div>
+                    </div>
+                    <div class="settings-card">
+                        <h3>Tax Configuration</h3>
+                        <div class="form-group">
+                            <label>VAT Rate (%)</label>
+                            <input type="number" id="settings-vat" value="16">
+                        </div>
+                    </div>
                 </div>
             </section>
         </main>
@@ -140,24 +169,24 @@
             </div>
             <form id="add-product-form">
                 <div class="form-group">
-                    <label>Book Title</label>
+                    <label>Book Title / Item Name</label>
                     <input type="text" id="modal-name" required>
                 </div>
                 <div class="form-row">
                     <div class="form-group">
-                        <label>Cost</label>
+                        <label>Cost Price</label>
                         <input type="number" id="modal-cost" required>
                     </div>
                     <div class="form-group">
-                        <label>Retail</label>
+                        <label>Selling Price</label>
                         <input type="number" id="modal-price" required>
                     </div>
                 </div>
                 <div class="form-group">
-                    <label>Stock</label>
+                    <label>Initial Stock</label>
                     <input type="number" id="modal-stock" required>
                 </div>
-                <button type="submit" class="save-btn">Confirm Add</button>
+                <button type="submit" class="save-btn">Confirm and Add to Shelves</button>
             </form>
         </div>
     </div>
