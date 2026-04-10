@@ -2,10 +2,10 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Elevation Pillar | Professional POS</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css?v=3">
 </head>
 <body>
 
@@ -29,16 +29,16 @@
         <aside class="sidebar">
             <div class="sidebar-links">
                 <button class="nav-btn active" onclick="showTab('checkout')">
-                    <span class="icon">🛒</span> Checkout
+                    <span class="icon">🛒</span> <span>Checkout</span>
                 </button>
                 <button class="nav-btn" onclick="showTab('inventory')">
-                    <span class="icon">📦</span> Inventory
+                    <span class="icon">📦</span> <span>Inventory</span>
                 </button>
                 <button class="nav-btn" onclick="showTab('reports')">
-                    <span class="icon">📈</span> Reports
+                    <span class="icon">📈</span> <span>Reports</span>
                 </button>
                 <button class="nav-btn" onclick="showTab('settings')">
-                    <span class="icon">⚙️</span> Settings
+                    <span class="icon">⚙️</span> <span>Settings</span>
                 </button>
             </div>
             <div class="sidebar-footer">
@@ -47,17 +47,17 @@
         </aside>
 
         <main class="content">
-
             <section id="checkout" class="tab-content active">
                 <header class="tab-header">
                     <div>
                         <h1>Point of Sale</h1>
                         <p class="subtitle">Process customer orders efficiently</p>
                     </div>
-                    <div class="search-bar">
-                        <input type="text" id="barcode-search" placeholder="Search by book title or category...">
-                    </div>
                 </header>
+
+                <div class="search-bar">
+                    <input type="text" id="barcode-search" placeholder="Search book title...">
+                </div>
                 
                 <div class="checkout-container">
                     <div class="product-gallery">
@@ -71,17 +71,12 @@
                             <button class="clear-btn" onclick="clearCart()">Clear All</button>
                         </div>
                         
-                        <div id="cart-items" class="cart-body">
-                            </div>
+                        <div id="cart-items" class="cart-body"></div>
 
                         <div class="cart-summary">
                             <div class="summary-line">
                                 <span>Subtotal</span>
                                 <span id="subtotal">Ksh 0.00</span>
-                            </div>
-                            <div class="summary-line">
-                                <span>VAT (16%)</span>
-                                <span id="tax">Ksh 0.00</span>
                             </div>
                             <div class="summary-total">
                                 <span>Grand Total</span>
@@ -90,12 +85,8 @@
                         </div>
 
                         <div class="payment-actions">
-                            <button class="pay-btn mpesa" onclick="processPayment('mpesa')">
-                                <span class="btn-icon">📲</span> Lipa na M-Pesa
-                            </button>
-                            <button class="pay-btn cash" onclick="processPayment('cash')">
-                                <span class="btn-icon">💵</span> Cash Payment
-                            </button>
+                            <button class="pay-btn mpesa" onclick="processPayment('mpesa')">📲 Lipa na M-Pesa</button>
+                            <button class="pay-btn cash" onclick="processPayment('cash')">💵 Cash Payment</button>
                         </div>
                     </div>
                 </div>
@@ -103,72 +94,41 @@
 
             <section id="inventory" class="tab-content">
                 <header class="tab-header">
-                    <div>
-                        <h1>Inventory Management</h1>
-                        <p class="subtitle">Manage your books and stock levels</p>
-                    </div>
-                    <button class="add-new-btn" onclick="toggleModal('add-product-modal')">
-                        <span>+</span> Add New Product
-                    </button>
+                    <h1>Inventory</h1>
+                    <button class="add-new-btn" onclick="toggleModal('add-product-modal')">+ Add Product</button>
                 </header>
-
                 <div class="table-container">
                     <table class="data-table">
                         <thead>
                             <tr>
-                                <th>Item Details</th>
-                                <th>Category</th>
-                                <th>Cost (Ksh)</th>
-                                <th>Retail (Ksh)</th>
-                                <th>In Stock</th>
-                                <th>Status</th>
+                                <th>Item</th>
+                                <th>Cost</th>
+                                <th>Retail</th>
+                                <th>Stock</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
-                        <tbody id="inventory-table-body">
-                            </tbody>
+                        <tbody id="inventory-table-body"></tbody>
                     </table>
                 </div>
             </section>
 
             <section id="reports" class="tab-content">
-                <header class="tab-header">
-                    <div>
-                        <h1>Analytics & Performance</h1>
-                        <p class="subtitle">Real-time business insights</p>
-                    </div>
-                </header>
-
                 <div class="stats-grid">
                     <div class="stat-card revenue">
-                        <small>Today's Revenue</small>
+                        <small>Revenue</small>
                         <h2 id="report-sales">Ksh 0.00</h2>
-                        <span class="trend">↑ Live</span>
-                    </div>
-                    <div class="stat-card profit">
-                        <small>Estimated Profit</small>
-                        <h2 id="report-profit">Ksh 0.00</h2>
-                        <span class="trend">Based on margins</span>
-                    </div>
-                    <div class="stat-card orders">
-                        <small>Transactions</small>
-                        <h2 id="report-orders">0</h2>
-                        <span class="trend">Today</span>
                     </div>
                     <div class="stat-card warning">
-                        <small>Low Stock Alert</small>
+                        <small>Low Stock</small>
                         <h2 id="low-stock-count">0</h2>
-                        <span class="trend">Items needing restock</span>
                     </div>
                 </div>
-
                 <div class="recent-sales-section">
-                    <h3>Recent Transaction Feed</h3>
-                    <div id="sales-history-list" class="feed-container">
-                        </div>
+                    <h3>Recent Transactions</h3>
+                    <div id="sales-history-list" class="feed-container"></div>
                 </div>
             </section>
-
         </main>
     </div>
 
@@ -180,33 +140,24 @@
             </div>
             <form id="add-product-form">
                 <div class="form-group">
-                    <label>Book Title / Item Name</label>
-                    <input type="text" id="modal-name" placeholder="e.g. Grade 7 Math Master Class" required>
-                </div>
-                <div class="form-group">
-                    <label>Category</label>
-                    <select id="modal-category">
-                        <option value="Junior School">Junior School</option>
-                        <option value="Senior School">Senior School</option>
-                        <option value="Stationery">Stationery</option>
-                        <option value="Teacher Resources">Teacher Resources</option>
-                    </select>
+                    <label>Book Title</label>
+                    <input type="text" id="modal-name" required>
                 </div>
                 <div class="form-row">
                     <div class="form-group">
-                        <label>Cost Price (Your Cost)</label>
-                        <input type="number" id="modal-cost" placeholder="0.00" required>
+                        <label>Cost</label>
+                        <input type="number" id="modal-cost" required>
                     </div>
                     <div class="form-group">
-                        <label>Selling Price</label>
-                        <input type="number" id="modal-price" placeholder="0.00" required>
+                        <label>Retail</label>
+                        <input type="number" id="modal-price" required>
                     </div>
                 </div>
                 <div class="form-group">
-                    <label>Initial Stock Count</label>
-                    <input type="number" id="modal-stock" placeholder="Enter quantity" required>
+                    <label>Stock</label>
+                    <input type="number" id="modal-stock" required>
                 </div>
-                <button type="submit" class="save-btn">Confirm and Add to Shelves</button>
+                <button type="submit" class="save-btn">Confirm Add</button>
             </form>
         </div>
     </div>
