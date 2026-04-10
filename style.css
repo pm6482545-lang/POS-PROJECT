@@ -134,3 +134,38 @@ body {
 
     .sidebar-footer { display: none; } /* Hide copyright on mobile to save space */
 }
+/* Fix the Grid so it doesn't push the cart off-screen */
+.checkout-container {
+    display: flex;
+    flex-direction: column; /* Stack vertically on phones */
+    gap: 20px;
+}
+
+/* Ensure the scroll works on the specific POS section */
+#checkout.tab-content {
+    display: none;
+    height: auto;
+}
+
+#checkout.tab-content.active {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Fix the cart sidebar appearing as a block */
+.cart-sidebar {
+    background: white;
+    padding: 15px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    margin-bottom: 20px;
+}
+
+/* Ensure the modal is ALWAYS hidden unless active */
+.modal:not(.active) {
+    display: none !important;
+}
+
+.modal.active {
+    display: flex !important;
+}
